@@ -752,7 +752,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
             <div class="step-title">Make sure Python is installed</div>
             <p class="step-desc">Open a terminal (Command Prompt on Windows, Terminal on Mac/Linux) and type:</p>
             <div class="note note-key">python --version</div>
-            <p class="step-desc" style="margin-top:8px">If you see a version number, you are ready. If not, download Python from <a href="https://python.org" target="_blank" style="color:var(--gold)">python.org</a>. The free installer takes two minutes.</p>
+            <p class="step-desc" style="margin-top:8px">If you see a version number of 3.7 or higher, you are ready. If not, download Python from <a href="https://python.org" target="_blank" style="color:var(--gold)">python.org</a>. The free installer takes two minutes. On Mac and Linux, the command is usually <code>python3</code>, so use <code>python3 --version</code> here and <code>python3 aria-server.py</code> in step 4.</p>
           </div>
         </div>
         <div class="step">
@@ -778,42 +778,43 @@ import http.server, json, os, urllib.parse
 FOLDER = os.path.dirname(os.path.abspath(__file__))
 PORT   = 8765
 
+def layer_files():
+    return sorted(f for f in os.listdir(FOLDER)
+                  if f.lower().endswith(('.geojson', '.json')) and not f.startswith('.'))
+
 class Handler(http.server.BaseHTTPRequestHandler):
-    def do_GET(self):
+    def respond(self, code, body=b''):
+        self.send_response(code)
         self.send_header('Access-Control-Allow-Origin', '*')
-        path = urllib.parse.unquote(self.path)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):
+        path = urllib.parse.unquote(urllib.parse.urlparse(self.path).path)
         if path == '/layers':
-            files = [f for f in os.listdir(FOLDER)
-                     if f.endswith(('.geojson','.json')) and not f.startswith('.')]
-            layers = [{'name': os.path.splitext(f)[0], 'filename': f} for f in files]
-            body = json.dumps(layers).encode()
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.end_headers()
-            self.wfile.write(body)
-        elif path.startswith('/file/'):
-            fname = path[6:]
-            fpath = os.path.join(FOLDER, fname)
-            if os.path.exists(fpath):
-                self.send_response(200)
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-                with open(fpath, 'rb') as f:
-                    self.wfile.write(f.read())
-            else:
-                self.send_response(404); self.end_headers()
+            layers = [{'name': os.path.splitext(f)[0], 'filename': f} for f in layer_files()]
+            self.respond(200, json.dumps(layers).encode())
+        elif path.startswith('/file/') and path[6:] in layer_files():
+            with open(os.path.join(FOLDER, path[6:]), 'rb') as f:
+                self.respond(200, f.read())
         else:
-            self.send_response(404); self.end_headers()
+            self.respond(404)
+
     def do_OPTIONS(self):
-        self.send_response(200)
+        self.send_response(204)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET')
+        self.send_header('Access-Control-Allow-Headers', '*')
+        self.send_header('Content-Length', '0')
         self.end_headers()
-    def log_message(self, *a): pass  <span style="color:#7d8590"># suppress terminal output</span>
+
+    def log_message(self, *args): pass  <span style="color:#7d8590"># suppress terminal output</span>
 
 print(f'ARIA library server running. Watching {FOLDER}')
-print(f'Open ARIA and click Connect in the sources panel.')
-http.server.HTTPServer(('localhost', PORT), Handler).serve_forever()</pre>
+print('Open ARIA and click Connect in the sources panel.')
+http.server.ThreadingHTTPServer(('localhost', PORT), Handler).serve_forever()</pre>
             </div>
           </div>
         </div>
@@ -831,7 +832,7 @@ http.server.HTTPServer(('localhost', PORT), Handler).serve_forever()</pre>
           <div class="step-body">
             <div class="step-title">Connect from ARIA</div>
             <p class="step-desc">Open ARIA in your browser. At the top of the sources panel, <strong>Local library not connected</strong> appears. Click <strong>Connect</strong>. ARIA loads all GeoJSON files from your folder and checks for changes every 10 seconds, so you can drop new files into the folder while ARIA is open and they appear automatically.</p>
-            <div class="note note-tip">The server only accepts connections from your own computer (localhost). Your files cannot be accessed by anyone else.</div>
+            <div class="note note-tip">The server only accepts connections from your own computer (localhost) and only serves the GeoJSON files in your library folder.</div>
           </div>
         </div>
       </div>
