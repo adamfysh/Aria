@@ -459,7 +459,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
         <div class="step">
           <div class="step-n">3</div>
           <div class="step-body">
-            <div class="step-title">Click <span class="ui-el">⬡ Draw polygon</span></div>
+            <div class="step-title">Click <span class="ui-el">⬡ Draw from paste</span></div>
             <p class="step-desc">ARIA draws the polygon on the map, zooms to it, and runs the query automatically.</p>
             <div class="note note-info">ARIA detects coordinate order automatically. If the first value is greater than 90, it assumes longitude first. Otherwise it assumes latitude first. This covers most met service formats.</div>
           </div>
@@ -603,7 +603,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
           <div class="step-n">1</div>
           <div class="step-body">
             <div class="step-title">Library-only mode (no AI required)</div>
-            <p class="step-desc">If you have ARIA-Lex loaded and want to work on an air-gapped machine or without any AI API, tick the <strong>Library only (no AI)</strong> checkbox next to the Generate button. ARIA looks up matching pre-validated messages by hazard, severity and authority level and renders them directly. No internet connection is required beyond the initial tool download.</p>
+            <p class="step-desc">If you have ARIA-Lex loaded and want to work on an air-gapped machine or without any AI API, tick the <strong>Library only</strong> checkbox next to the Generate button. ARIA looks up matching pre-validated messages by hazard, severity and authority level and renders them directly. No internet connection is required beyond the initial tool download.</p>
             <div class="note note-tip">All output in library-only mode is tagged <span style="font-family:var(--mono);font-size:11px;color:var(--green)">Library</span>. There is no Contextualised or Synthesised output. You get the validated text as written, nothing more.</div>
             <div class="note note-warn">Library-only mode cannot slot in specific place names or feature counts from your GIS data, because that contextualisation step requires the AI. Choose the mode that suits your operational context.</div>
           </div>
@@ -612,7 +612,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
           <div class="step-n">2</div>
           <div class="step-body">
             <div class="step-title">AI mode: wait for the loading message</div>
-            <p class="step-desc">ARIA first queries your library, then calls the AI. The loading message tells you what is happening, for example: <em>"Grounding against 24 library messages, then contextualising with local data…"</em></p>
+            <p class="step-desc">ARIA first queries your library, then calls the AI. The loading message tells you what is happening, for example: <em>"Grounding against 24 library messages then contextualising…"</em></p>
           </div>
         </div>
         <div class="step">
@@ -716,7 +716,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
         <div class="step">
           <div class="step-n">?</div>
           <div class="step-body">
-            <div class="step-title">Library shows "No messages found"</div>
+            <div class="step-title">The library preview says "No library messages for this combination"</div>
             <p class="step-desc">The current hazard/severity combination may not have entries in your library file. Check the library preview in Step 2. The AI still generates descriptions, and they are tagged Synthesised.</p>
           </div>
         </div>
@@ -724,7 +724,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
           <div class="step-n">?</div>
           <div class="step-body">
             <div class="step-title">Library-only mode gives no results</div>
-            <p class="step-desc">Check that ARIA-Lex is loaded (the indicator in the top-right should be green). Then confirm that the hazard and severity combination you selected has entries in the library. The preview in Step 2 shows this. If it says "No library messages found", try a different severity level or check that the correct .db file is loaded.</p>
+            <p class="step-desc">Check that ARIA-Lex is loaded (the indicator in the top-right should be green). Then confirm that the hazard and severity combination you selected has entries in the library. The preview in Step 2 shows this. If it says "No library messages for this combination", try a different severity level or check that the correct .db file is loaded.</p>
           </div>
         </div>
         <div class="step">
