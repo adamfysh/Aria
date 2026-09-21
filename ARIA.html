@@ -183,6 +183,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14p
 
 /* ── MAP ── */
 #geo-map{flex:1;z-index:1}
+#tile-notice{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:1000;max-width:90%;padding:6px 12px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow);font-size:12px;color:var(--ink2);text-align:center;pointer-events:none}
 .leaflet-draw-toolbar a,.leaflet-bar a{background-color:white!important;border-color:var(--border)!important;color:var(--ink)!important}
 .leaflet-bar a:hover{background-color:var(--surface2)!important}
 .leaflet-popup-content-wrapper{background:white;color:var(--ink);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
@@ -666,9 +667,21 @@ function updateDbPreview(){
 
 // ── MAP ───────────────────────────────────────────────────────────────────────
 const map=L.map('geo-map',{zoomControl:true}).setView([20,15],3);
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{
+const baseTiles=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{
   attribution:'Tiles &copy; Esri. Source: Esri, HERE, Garmin, OpenStreetMap contributors',maxZoom:19
 }).addTo(map);
+// The map background always needs an internet connection. Tell the user if it cannot load.
+(function(){
+  let note=null;
+  baseTiles.on('tileerror',()=>{
+    if(note)return;
+    note=document.createElement('div');
+    note.id='tile-notice';
+    note.textContent='The map background could not load. It needs an internet connection. Drawing, the library and export still work.';
+    document.getElementById('geo-map').appendChild(note);
+  });
+  baseTiles.on('tileload',()=>{if(note){note.remove();note=null;}});
+})();
 const drawnItems=new L.FeatureGroup().addTo(map);
 const resultLayers=new L.FeatureGroup().addTo(map);
 new L.Control.Draw({
