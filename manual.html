@@ -178,21 +178,27 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
     <div class="chapter" id="setup">
       <div class="chapter-eyebrow">Getting started · 1</div>
       <h2 class="chapter-title">Download and open ARIA</h2>
-      <p class="chapter-intro">ARIA is a single HTML file. There is nothing to install. It runs entirely in your web browser.</p>
+      <p class="chapter-intro">ARIA is a single HTML file, available in two versions. There is nothing to install. It runs in your web browser.</p>
       <div class="steps">
         <div class="step">
           <div class="step-n">1</div>
           <div class="step-body">
             <div class="step-title">Download the file</div>
-            <p class="step-desc">Go to <a href="product-page.html#download" style="color:var(--gold)">lastlarch.com/aria</a> and click <span class="ui-el gold">Download tool →</span>. Save the file. It is called <code>ARIA.html</code>.</p>
-            <div class="note note-tip">Save it somewhere you can find it again, such as your Desktop or a dedicated folder like <code>Tools/ARIA/</code>.</div>
+            <p class="step-desc">Go to <a href="product-page.html#download" style="color:var(--gold)">lastlarch.com/aria</a> and click <span class="ui-el gold">Download tool →</span>. Choose one of the two versions.</p>
+            <table class="opt-table" style="margin:10px 0">
+              <tr><th>File</th><th>Size</th><th>Choose it when</th></tr>
+              <tr><td><code>ARIA.html</code></td><td>About 0.3 MB</td><td>You have an internet connection each time you open ARIA. It loads its map, database and file-reading libraries from public servers when it opens.</td></tr>
+              <tr><td><code>ARIA-offline.html</code></td><td>About 2 MB</td><td>You need ARIA to open without a connection, for example in the field or on a restricted network. Those libraries and the fonts are built into the file, which makes it about six times larger.</td></tr>
+            </table>
+            <div class="note note-tip">Both versions work the same way once they are open. Save the file somewhere you can find it again, such as your Desktop or a dedicated folder like <code>Tools/ARIA/</code>.</div>
           </div>
         </div>
         <div class="step">
           <div class="step-n">2</div>
           <div class="step-body">
             <div class="step-title">Open it in your browser</div>
-            <p class="step-desc">Double-click <code>ARIA.html</code>. It opens in your default web browser. Chrome, Edge, Firefox, and Safari all work. No internet connection is required once it is open, unless you are querying online data sources or using an AI API.</p>
+            <p class="step-desc">Double-click the file you saved. It opens in your default web browser. Chrome, Edge, Firefox, and Safari all work. The standard version needs an internet connection to open. The offline version does not.</p>
+            <div class="note note-warn">Even in the offline version, three things need internet: the map background (Esri), online data sources such as ArcGIS, WFS and URLs, and AI providers. Without a connection the map background stays grey and ARIA shows a short notice. You can still draw or paste a polygon, query local files, load ARIA-Lex and use Library only mode.</div>
           </div>
         </div>
         <div class="step">
@@ -200,7 +206,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
           <div class="step-body">
             <div class="step-title">You are ready</div>
             <p class="step-desc">You will see a map on the right and a sidebar on the left. A sample dataset (European city points) is preloaded so you can test the tool immediately.</p>
-            <div class="note note-warn">If your browser shows a security warning about opening local files, click <strong>Allow</strong> or <strong>Open anyway</strong>. ARIA is safe. It contains no server connections of its own.</div>
+            <div class="note note-warn">If your browser shows a security warning about opening local files, click <strong>Allow</strong> or <strong>Open anyway</strong>. ARIA does not send your data anywhere unless you choose an online source or an AI provider.</div>
           </div>
         </div>
       </div>
@@ -505,6 +511,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
           </div>
         </div>
       </div>
+      <div class="note note-warn" style="margin-top:8px"><strong>What the library covers now.</strong> ARIA-Lex holds 1,513 active messages for seven hazards (cyclone, flood, heatwave, wildfire, tsunami, cold wave and disease outbreak) across seven sectors. Two gaps remain. There are no earthquake messages yet, so for earthquake the AI writes every sector from your GIS data and tags it Synthesised, and Library only mode finds nothing. Messages for Food Systems &amp; Agriculture are included but switched off until they are reviewed. All messages are marked provisional and should be reviewed by domain experts before operational use.</div>
     </div>
 
     <hr class="chapter-divider">
@@ -522,7 +529,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
         <tr><td>Flood</td><td>fl</td><td>River flood, flash flood, urban flooding</td></tr>
         <tr><td>Heatwave</td><td>hw</td><td>Extreme heat events</td></tr>
         <tr><td>Wildfire</td><td>wf</td><td>Forest fire, bushfire</td></tr>
-        <tr><td>Earthquake</td><td>eq</td><td>Seismic events</td></tr>
+        <tr><td>Earthquake</td><td>eq</td><td>Seismic events. No library messages yet, so all output is AI-generated.</td></tr>
         <tr><td>Tsunami</td><td>ts</td><td>Coastal wave events</td></tr>
         <tr><td>Cold wave / Freeze</td><td>cw</td><td>Extreme cold, frost, snowstorm</td></tr>
         <tr><td>Disease outbreak</td><td>do</td><td>Epidemic, pandemic risk areas</td></tr>
@@ -568,7 +575,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
               <tr><td>Claude</td><td>Anthropic</td><td><a href="https://console.anthropic.com" target="_blank" style="color:var(--gold)">console.anthropic.com</a></td></tr>
               <tr><td>GPT-4o</td><td>OpenAI</td><td><a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--gold)">platform.openai.com/api-keys</a></td></tr>
               <tr><td>Gemini</td><td>Google</td><td><a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold)">aistudio.google.com</a></td></tr>
-              <tr><td>Custom</td><td>Any compatible</td><td>Enter your own endpoint URL and model name</td></tr>
+              <tr><td>Custom</td><td>Any OpenAI-compatible API on an allowed host</td><td>Enter the endpoint URL and model name. See the note below.</td></tr>
             </table>
           </div>
         </div>
@@ -583,8 +590,9 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
         <div class="step">
           <div class="step-n">3</div>
           <div class="step-body">
-            <div class="step-title">Advanced: use a custom or self-hosted model</div>
-            <p class="step-desc">Select <span class="ui-el">Custom</span> and enter your endpoint URL and model name. This works with any OpenAI-compatible API, including self-hosted models running through Ollama or similar tools. With self-hosted models, your data never leaves your network.</p>
+            <div class="step-title">Advanced: use a custom endpoint</div>
+            <p class="step-desc">Select <span class="ui-el">Custom</span> and enter the endpoint URL and model name of an OpenAI-compatible API, for example OpenRouter at <code>https://openrouter.ai/api/v1/chat/completions</code>. ARIA sends every AI request through its relay worker, and the worker only forwards to <code>api.anthropic.com</code>, <code>api.openai.com</code>, <code>generativelanguage.googleapis.com</code> and <code>openrouter.ai</code>. An endpoint on any other host is refused.</p>
+            <div class="note note-warn">Models on your own computer or network, such as Ollama, cannot be reached this way, because the relay runs in the cloud. If no data may leave your network, use Library only mode. It sends nothing anywhere.</div>
           </div>
         </div>
       </div>
@@ -603,7 +611,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
           <div class="step-n">1</div>
           <div class="step-body">
             <div class="step-title">Library-only mode (no AI required)</div>
-            <p class="step-desc">If you have ARIA-Lex loaded and want to work on an air-gapped machine or without any AI API, tick the <strong>Library only</strong> checkbox next to the Generate button. ARIA looks up matching pre-validated messages by hazard, severity and authority level and renders them directly. No internet connection is required beyond the initial tool download.</p>
+            <p class="step-desc">If you have ARIA-Lex loaded and want to work on an air-gapped machine (use the offline version) or without any AI API, tick the <strong>Library only</strong> checkbox next to the Generate button. ARIA looks up matching pre-validated messages by hazard, severity and authority level and renders them directly. Library only mode makes no network calls. With the offline version it works with no internet connection at all. With the standard version, a connection is needed only to open the tool.</p>
             <div class="note note-tip">All output in library-only mode is tagged <span style="font-family:var(--mono);font-size:11px;color:var(--green)">Library</span>. There is no Contextualised or Synthesised output. You get the validated text as written, nothing more.</div>
             <div class="note note-warn">Library-only mode cannot slot in specific place names or feature counts from your GIS data, because that contextualisation step requires the AI. Choose the mode that suits your operational context.</div>
           </div>
@@ -689,7 +697,14 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
           <div class="step-n">?</div>
           <div class="step-body">
             <div class="step-title">The map is not loading</div>
-            <p class="step-desc">The map tiles (Esri World Street Map) need an internet connection. Check your connection. The map tiles are the only part of ARIA that needs internet when you are not using API sources.</p>
+            <p class="step-desc">The map background (Esri World Street Map) needs an internet connection in both versions. When it cannot load, ARIA shows a short notice above the map. Check your connection. Drawing, local files and Library only mode still work without it.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">?</div>
+          <div class="step-body">
+            <div class="step-title">ARIA.html opens as a blank or broken page</div>
+            <p class="step-desc">The standard version loads its libraries from public servers when it opens. If you have no connection, or your network blocks those servers, the page cannot start. Use <code>ARIA-offline.html</code> instead. It has the libraries built in.</p>
           </div>
         </div>
         <div class="step">
