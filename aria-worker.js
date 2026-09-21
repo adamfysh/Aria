@@ -1,6 +1,6 @@
 /**
  * ARIA API Relay Worker
- * Last Larch (lastlarch.com) · CC BY 4.0
+ * Last Larch (lastlarch.com) · MIT License
  *
  * This worker relays requests from ARIA to AI provider APIs.
  * It does NOT store, log, or inspect request content or API keys.

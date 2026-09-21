@@ -32,7 +32,6 @@ Full walkthrough: [`manual.html`](./manual.html)
 | `ARIA-Lex.db` | Seed early action message library (SQLite), 8 hazard types × 8 sectors |
 | `aria-worker.js` | Cloudflare Worker source. Relays AI API calls so ARIA works in any browser, including when opened as a local file |
 | `manual.html` | Full operations manual covering every step and option |
-| `METHODOLOGY.md` | Architecture decisions, data model, and design rationale |
 | `LICENSE` | MIT |
 
 ## Why a relay worker?
@@ -59,7 +58,7 @@ Issues and pull requests are welcome. This project is at an early stage. The see
 
 ## License
 
-MIT. See [LICENSE](./LICENSE). Free to use, modify, and deploy, including commercially. Attribution is appreciated but not required by the license terms.
+MIT. See [LICENSE](./LICENSE). Free to use, modify, and deploy, including commercially. The license requires that the copyright and license notice stay with any copy.
 
 ## Contact
 
