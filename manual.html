@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARIA — Operations Manual</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --paper: #f7f4ee; --paper2: #eeebe3; --paper3: #e0dcd2;
+  --ink: #1a1a18; --ink2: #3a3a36; --ink3: #7a7a72;
+  --gold: #b8860b; --gold-bg: rgba(184,134,11,0.08);
+  --green: #1a5c30; --green-bg: rgba(26,92,48,0.08);
+  --red: #8b1a1a; --red-bg: rgba(139,26,26,0.08);
+  --blue: #1a3a5c; --blue-bg: rgba(26,58,92,0.08);
+  --sans: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Playfair Display', serif;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.7; font-weight: 300; }
+
+/* ── NAV ── */
+nav { position: sticky; top: 0; z-index: 100; background: var(--ink); padding: 0 48px; display: flex; align-items: stretch; gap: 0; }
+.nav-logo { font-family: var(--serif); font-size: 15px; font-weight: 700; color: var(--paper); text-decoration: none; padding: 14px 24px 14px 0; border-right: 1px solid rgba(255,255,255,0.1); margin-right: 4px; }
+.nav-logo span { color: var(--gold); }
+.nav-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(247,244,238,0.4); padding: 14px 16px; display: flex; align-items: center; }
+.nav-links { display: flex; margin-left: auto; }
+.nav-links a { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: rgba(247,244,238,0.5); text-decoration: none; padding: 0 14px; display: flex; align-items: center; border-left: 1px solid rgba(255,255,255,0.06); transition: color 0.15s; }
+.nav-links a:hover { color: var(--paper); }
+
+/* ── LAYOUT ── */
+.layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 49px); }
+
+/* ── SIDEBAR TOC ── */
+.toc { background: var(--paper2); border-right: 1px solid var(--paper3); padding: 28px 0; position: sticky; top: 49px; height: calc(100vh - 49px); overflow-y: auto; }
+.toc::-webkit-scrollbar { width: 3px; }
+.toc::-webkit-scrollbar-thumb { background: var(--paper3); }
+.toc-section { margin-bottom: 4px; }
+.toc-head { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink3); padding: 8px 20px 4px; }
+.toc-link { display: flex; align-items: center; gap: 8px; padding: 6px 20px; font-size: 12px; color: var(--ink2); text-decoration: none; transition: all 0.12s; border-left: 2px solid transparent; line-height: 1.4; }
+.toc-link:hover { background: var(--paper3); color: var(--ink); border-left-color: var(--gold); }
+.toc-link.active { background: var(--paper3); color: var(--ink); border-left-color: var(--gold); font-weight: 500; }
+.toc-num { font-family: var(--mono); font-size: 10px; color: var(--gold); flex-shrink: 0; width: 18px; }
+
+/* ── MAIN CONTENT ── */
+main { padding: 52px 64px 80px; max-width: 780px; }
+
+/* ── CHAPTER ── */
+.chapter { margin-bottom: 64px; scroll-margin-top: 70px; }
+.chapter-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.chapter-title { font-family: var(--serif); font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 14px; }
+.chapter-intro { font-size: 15px; color: var(--ink2); line-height: 1.75; margin-bottom: 32px; max-width: 600px; border-left: 3px solid var(--paper3); padding-left: 16px; }
+
+/* ── STEPS ── */
+.steps { display: flex; flex-direction: column; gap: 0; }
+.step { display: grid; grid-template-columns: 40px 1fr; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--paper3); }
+.step:last-child { border-bottom: none; }
+.step-n { width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.step-body {}
+.step-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+.step-desc { font-size: 14px; color: var(--ink2); line-height: 1.75; }
+.step-desc + .step-note { margin-top: 10px; }
+
+/* ── NOTES / TIPS / WARNINGS ── */
+.note { font-size: 13px; line-height: 1.7; padding: 10px 14px; border-radius: 4px; margin-top: 10px; }
+.note-tip  { background: var(--green-bg); color: var(--green); border-left: 3px solid var(--green); }
+.note-warn { background: rgba(184,134,11,0.1); color: #7a5800; border-left: 3px solid var(--gold); }
+.note-info { background: var(--blue-bg); color: var(--blue); border-left: 3px solid var(--blue); }
+.note-key  { background: var(--paper2); color: var(--ink2); border-left: 3px solid var(--paper3); font-family: var(--mono); }
+
+/* ── CODE / UI LABELS ── */
+code { font-family: var(--mono); font-size: 13px; background: var(--paper2); padding: 1px 6px; border-radius: 3px; color: var(--gold); border: 1px solid var(--paper3); }
+.ui-el { display: inline-block; font-family: var(--mono); font-size: 11px; background: var(--ink); color: var(--paper); padding: 2px 8px; border-radius: 3px; letter-spacing: 0.04em; }
+.ui-el.gold { background: var(--gold); color: white; }
+.ui-el.green { background: var(--green); color: white; }
+
+/* ── OPTION TABLES ── */
+.opt-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+.opt-table th { text-align: left; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); padding: 0 12px 8px 0; border-bottom: 1px solid var(--paper3); font-weight: 400; }
+.opt-table td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--paper3); vertical-align: top; line-height: 1.6; }
+.opt-table tr:last-child td { border-bottom: none; }
+.opt-table td:first-child { font-family: var(--mono); font-size: 12px; color: var(--gold); white-space: nowrap; padding-right: 20px; }
+.opt-table td:nth-child(2) { font-weight: 500; color: var(--ink); padding-right: 20px; white-space: nowrap; }
+.opt-table td:nth-child(3) { color: var(--ink2); }
+
+/* ── TAG LEGEND ── */
+.tag-legend { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.tag-row { display: flex; align-items: flex-start; gap: 14px; }
+.tag-pill { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; width: 140px; }
+.tag-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.tag-library     { background: rgba(26,92,48,0.1);   color: var(--green); border: 1px solid rgba(26,92,48,0.25);   }
+.tag-contextual  { background: rgba(184,134,11,0.1); color: var(--gold);  border: 1px solid rgba(184,134,11,0.3);  }
+.tag-synthesised { background: rgba(74,32,96,0.1);   color: #4a2060;      border: 1px solid rgba(74,32,96,0.25);   }
+.tag-desc { font-size: 13px; color: var(--ink2); line-height: 1.65; }
+
+/* ── DIVIDER ── */
+.chapter-divider { border: none; border-top: 2px solid var(--paper3); margin: 64px 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 800px) {
+  .layout { grid-template-columns: 1fr; }
+  .toc { display: none; }
+  main { padding: 32px 24px 60px; }
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="product-page.html" class="nav-logo">Last <span>Larch</span></a>
+  <span class="nav-label">ARIA — Operations Manual</span>
+  <div class="nav-links">
+    <a href="#setup">Setup</a>
+    <a href="#sources">Sources</a>
+    <a href="#polygon">Polygon</a>
+    <a href="#library">Library</a>
+    <a href="#ai">AI model</a>
+    <a href="#generate">Generate</a>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-section">
+      <div class="toc-head">Getting started</div>
+      <a href="#setup" class="toc-link"><span class="toc-num">1</span>Download &amp; open</a>
+      <a href="#overview" class="toc-link"><span class="toc-num">2</span>How ARIA works</a>
+    </div>
+    <div class="toc-section">
+      <div class="toc-head">Step 1 — Data sources</div>
+      <a href="#sources-local" class="toc-link"><span class="toc-num">3</span>Load a local file</a>
+      <a href="#sources-arcgis" class="toc-link"><span class="toc-num">4</span>Connect ArcGIS</a>
+      <a href="#sources-wfs" class="toc-link"><span class="toc-num">5</span>Connect WFS</a>
+      <a href="#sources-geojson" class="toc-link"><span class="toc-num">6</span>Load GeoJSON URL</a>
+    </div>
+    <div class="toc-section">
+      <div class="toc-head">Step 1 — Polygon</div>
+      <a href="#polygon-draw" class="toc-link"><span class="toc-num">7</span>Draw on the map</a>
+      <a href="#polygon-paste" class="toc-link"><span class="toc-num">8</span>Paste coordinates</a>
+    </div>
+    <div class="toc-section">
+      <div class="toc-head">Step 2 — Configure</div>
+      <a href="#library" class="toc-link"><span class="toc-num">9</span>Load ARIA-Lex</a>
+      <a href="#hazard" class="toc-link"><span class="toc-num">10</span>Hazard &amp; severity</a>
+      <a href="#ai" class="toc-link"><span class="toc-num">11</span>Connect an AI model</a>
+    </div>
+    <div class="toc-section">
+      <div class="toc-head">Step 3 — Output</div>
+      <a href="#generate" class="toc-link"><span class="toc-num">12</span>Generate &amp; read output</a>
+      <a href="#export" class="toc-link"><span class="toc-num">13</span>Export — CSV &amp; text</a>
+    </div>
+    <div class="toc-section">
+      <div class="toc-head">Reference</div>
+      <a href="#troubleshoot" class="toc-link"><span class="toc-num">14</span>Troubleshooting</a>
+      <a href="#local-server" class="toc-link"><span class="toc-num">15</span>Local library server</a>
+      <a href="#license" class="toc-link"><span class="toc-num">16</span>License &amp; attribution</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- INTRO -->
+    <div style="margin-bottom:52px">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Last Larch · ARIA</div>
+      <h1 style="font-family:var(--serif);font-size:38px;font-weight:700;letter-spacing:-0.02em;line-height:1.1;margin-bottom:14px">Operations Manual</h1>
+      <p style="font-size:15px;color:var(--ink2);max-width:560px;line-height:1.75">A step-by-step guide to setting up and using ARIA — from downloading the file to generating your first sector-specific CAP alert descriptions.</p>
+    </div>
+
+    <!-- ── CHAPTER 1: SETUP ── -->
+    <div class="chapter" id="setup">
+      <div class="chapter-eyebrow">Getting started · 1</div>
+      <h2 class="chapter-title">Download &amp; open ARIA</h2>
+      <p class="chapter-intro">ARIA is a single HTML file. There is nothing to install. It runs entirely in your web browser.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Download the file</div>
+            <p class="step-desc">Go to <a href="product-page.html#download" style="color:var(--gold)">lastlarch.com/aria</a> and click <span class="ui-el gold">Download tool →</span>. Save the file — it will be called <code>ARIA.html</code>.</p>
+            <div class="note note-tip">Save it somewhere you'll find it again — your Desktop or a dedicated folder like <code>Tools/ARIA/</code> works well.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Open it in your browser</div>
+            <p class="step-desc">Double-click <code>ARIA.html</code>. It will open in your default web browser. Chrome, Edge, Firefox, and Safari all work. No internet connection is required once it's open — unless you're querying online data sources or using an AI API.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">That's it</div>
+            <p class="step-desc">You'll see a dark-themed map on the right and a sidebar on the left. A sample dataset (European city points) is pre-loaded so you can test the tool immediately.</p>
+            <div class="note note-warn">If your browser shows a security warning about opening local files, click <strong>Allow</strong> or <strong>Open anyway</strong>. ARIA is safe — it contains no server connections of its own.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 2: OVERVIEW ── -->
+    <div class="chapter" id="overview">
+      <div class="chapter-eyebrow">Getting started · 2</div>
+      <h2 class="chapter-title">How ARIA works</h2>
+      <p class="chapter-intro">ARIA is a three-step wizard. Each step builds on the last.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">→</div>
+          <div class="step-body">
+            <div class="step-title">Step 1 — Query impact area</div>
+            <p class="step-desc">Load your GIS data sources, then draw or paste a polygon representing the hazard footprint. ARIA queries every active source and shows you what's inside — schools, health facilities, roads, whatever your data contains.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">→</div>
+          <div class="step-body">
+            <div class="step-title">Step 2 — Review &amp; configure</div>
+            <p class="step-desc">Choose which layers to include, set the hazard type and severity, and connect your ARIA-Lex library and AI model. This is where ARIA grounds the output in validated language before the AI adds local specifics.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">→</div>
+          <div class="step-body">
+            <div class="step-title">Step 3 — Alert descriptions</div>
+            <p class="step-desc">ARIA produces sector-specific <code>&lt;headline&gt;</code> and <code>&lt;description&gt;</code> blocks ready to paste into your CAP editor. Each block is tagged to show whether it came from your library or was generated fresh.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">→</div>
+          <div class="step-body">
+            <div class="step-title">Moving between steps</div>
+            <p class="step-desc">Every step has a <strong>← Back</strong> button so you can return and adjust at any time — change your polygon, add a source, or tweak the hazard settings without losing your work. The step indicators at the top show where you are and which steps are complete.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chapter" id="sources-local">
+      <div class="chapter-eyebrow">Step 1 — Data sources · 3</div>
+      <h2 class="chapter-title">Load a locally saved file</h2>
+      <p class="chapter-intro">Use this for GeoJSON files or shapefiles stored on your computer. Your data never leaves your machine.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Drag and drop</div>
+            <p class="step-desc">The easiest way. Drag a <code>.geojson</code>, <code>.json</code>, or <code>.zip</code> (shapefile) file from your file explorer and drop it anywhere on the ARIA window. It loads instantly and appears in the sources list.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Or use the Add source form</div>
+            <p class="step-desc">Click <span class="ui-el">+ Add source</span> in the sidebar. Enter a name, select <strong>Shapefile (.zip)</strong> from the type dropdown, click <strong>File</strong>, and browse to your file. Click <span class="ui-el gold">Add source</span>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">The source appears in the list</div>
+            <p class="step-desc">A toggle switch shows it's active. The badge shows the format. If you've already drawn a polygon, the query runs automatically.</p>
+            <div class="note note-tip">Prefer GeoJSON over shapefiles where you have the choice — it loads faster and handles special characters in place names better.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 4: ARCGIS ── -->
+    <div class="chapter" id="sources-arcgis">
+      <div class="chapter-eyebrow">Step 1 — Data sources · 4</div>
+      <h2 class="chapter-title">Connect an ArcGIS layer</h2>
+      <p class="chapter-intro">ARIA can query ArcGIS Online FeatureServer layers directly. It also accepts web map URLs and extracts all layers automatically.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Click <span class="ui-el">+ Add source</span> and select ArcGIS REST / Web Map</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Paste your URL</div>
+            <p class="step-desc">ARIA accepts three URL formats — paste whichever you have:</p>
+            <table class="opt-table" style="margin-top:12px">
+              <tr><th>Format</th><th></th><th>Example</th></tr>
+              <tr>
+                <td>FeatureServer</td>
+                <td>Recommended</td>
+                <td><code style="font-size:11px">…/FeatureServer/0</code></td>
+              </tr>
+              <tr>
+                <td>FeatureServer (no index)</td>
+                <td>Auto-fixed</td>
+                <td><code style="font-size:11px">…/FeatureServer</code> → ARIA appends <code>/0</code></td>
+              </tr>
+              <tr>
+                <td>Web Map Viewer URL</td>
+                <td>Auto-extracts all layers</td>
+                <td><code style="font-size:11px">arcgis.com/home/item.html?id=…</code></td>
+              </tr>
+            </table>
+            <div class="note note-info" style="margin-top:12px">If you paste a web map URL, ARIA fetches the map definition and adds every queryable layer as a separate source automatically. Public maps only — private maps require login.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Click <span class="ui-el gold">Add source</span></div>
+            <p class="step-desc">ArcGIS sources are queried live when you draw a polygon — the features inside your polygon are fetched directly from the service. No data is cached locally.</p>
+          </div>
+        </div>
+      </div>
+      <div class="note note-warn" style="margin-top:8px">If the query returns an error, the layer may require authentication or have CORS restrictions. Try opening the URL directly in your browser first to confirm it's publicly accessible.</div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 5: WFS ── -->
+    <div class="chapter" id="sources-wfs">
+      <div class="chapter-eyebrow">Step 1 — Data sources · 5</div>
+      <h2 class="chapter-title">Connect a WFS endpoint</h2>
+      <p class="chapter-intro">WFS (Web Feature Service) is a standard used by many national spatial data infrastructures and open data portals.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Find your WFS GetFeature URL</div>
+            <p class="step-desc">A WFS URL typically looks like:<br><code style="font-size:12px;display:block;margin-top:6px;padding:8px;background:var(--paper2);border-radius:4px;line-height:1.6">https://example.com/geoserver/ows?service=WFS&version=2.0.0&typeName=layername</code></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Select WFS endpoint and paste the URL</div>
+            <p class="step-desc">ARIA appends a bounding box filter derived from your polygon when querying. You don't need to add BBOX parameters yourself.</p>
+          </div>
+        </div>
+      </div>
+      <div class="note note-warn">WFS endpoints hosted on different domains sometimes block browser requests (CORS). If a WFS source returns an error, your IT team may need to configure the server to allow cross-origin requests, or you may need to use the data as a locally downloaded file instead.</div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 6: GEOJSON URL ── -->
+    <div class="chapter" id="sources-geojson">
+      <div class="chapter-eyebrow">Step 1 — Data sources · 6</div>
+      <h2 class="chapter-title">Load a GeoJSON from a URL</h2>
+      <p class="chapter-intro">If your data is hosted online as a GeoJSON file, ARIA can fetch it directly.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Click <span class="ui-el">+ Add source</span>, select GeoJSON (URL)</div>
+            <p class="step-desc">Paste a direct URL to a <code>.geojson</code> or <code>.json</code> file — for example a GitHub raw file URL or an HDX download link.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Click <span class="ui-el gold">Add source</span></div>
+            <p class="step-desc">ARIA fetches and caches the file in memory. It will show a green success message with the source name. The data is now available for polygon queries without a network request each time.</p>
+          </div>
+        </div>
+      </div>
+      <div class="note note-tip">HDX datasets (data.humdata.org) often offer GeoJSON downloads. For shapefiles from HDX, download the .zip and drag-drop it instead — ARIA parses shapefiles natively.</div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 7: DRAW POLYGON ── -->
+    <div class="chapter" id="polygon-draw">
+      <div class="chapter-eyebrow">Step 1 — Polygon · 7</div>
+      <h2 class="chapter-title">Draw a polygon on the map</h2>
+      <p class="chapter-intro">Use this when you want to define the hazard footprint manually or when exploring data coverage.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Navigate to your area of interest</div>
+            <p class="step-desc">Pan and zoom the map. If you have local data loaded, click <span class="ui-el">⊕ Fit map to data</span> to jump straight to the right area.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Click the polygon tool</div>
+            <p class="step-desc">In the top-left of the map, click the pentagon-shaped draw icon. Your cursor will change to a crosshair.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Click to place vertices</div>
+            <p class="step-desc">Click once for each corner of your polygon. Click the first point again (or double-click) to close the shape. The query runs automatically as soon as the polygon is closed.</p>
+            <div class="note note-tip">You can also use the rectangle tool for a quick bounding box query.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-body">
+            <div class="step-title">Edit if needed</div>
+            <p class="step-desc">Click the edit (pencil) icon in the map toolbar to drag vertices. The query re-runs automatically when you save the edit.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 8: PASTE POLYGON ── -->
+    <div class="chapter" id="polygon-paste">
+      <div class="chapter-eyebrow">Step 1 — Polygon · 8</div>
+      <h2 class="chapter-title">Paste a polygon from a warning</h2>
+      <p class="chapter-intro">Use this when you have coordinates from a meteorological service, a flood model output, or any other external source. ARIA accepts three formats.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Find the Paste polygon box in the sidebar</div>
+            <p class="step-desc">It's below the data sources list. Click into the text area.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Paste your coordinates in any of these formats</div>
+            <table class="opt-table" style="margin-top:12px">
+              <tr><th>Format</th><th>Example</th></tr>
+              <tr>
+                <td>Lat/lng pairs</td>
+                <td><code style="font-size:11px">-1.94, 30.06<br>-1.94, 30.14<br>-2.01, 30.14</code><br><span style="font-size:12px;color:var(--ink3)">One pair per line. Comma or space separated.</span></td>
+              </tr>
+              <tr>
+                <td>GeoJSON</td>
+                <td><code style="font-size:11px">{"type":"Polygon","coordinates":[[...]]}</code><br><span style="font-size:12px;color:var(--ink3)">Feature, FeatureCollection, or geometry object.</span></td>
+              </tr>
+              <tr>
+                <td>WKT</td>
+                <td><code style="font-size:11px">POLYGON((30.06 -1.94, 30.14 -1.94, ...))</code><br><span style="font-size:12px;color:var(--ink3)">Standard Well-Known Text format.</span></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Click <span class="ui-el">⬡ Draw polygon</span></div>
+            <p class="step-desc">ARIA draws the polygon on the map, zooms to it, and runs the query automatically.</p>
+            <div class="note note-info">ARIA auto-detects coordinate order. If the first value is greater than 90 it assumes longitude-first; otherwise it assumes latitude-first. This covers most met service formats.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 9: LIBRARY ── -->
+    <div class="chapter" id="library">
+      <div class="chapter-eyebrow">Step 2 — Configure · 9</div>
+      <h2 class="chapter-title">Load ARIA-Lex</h2>
+      <p class="chapter-intro">ARIA-Lex is the seed library of pre-validated early action messages. Loading it means the AI will use approved language as its foundation rather than generating everything from scratch.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Download ARIA-Lex</div>
+            <p class="step-desc">Go to <a href="product-page.html#aria-lex" style="color:var(--gold)">lastlarch.com/aria#aria-lex</a> and download <code>ARIA-Lex.db</code>. Save it alongside <code>ARIA.html</code> or in a known location.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Click the library status indicator</div>
+            <p class="step-desc">In the top-right corner of ARIA you'll see a small indicator that says <span class="ui-el">No library loaded</span>. Click it to open the library settings panel.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Drop or browse to ARIA-Lex.db</div>
+            <p class="step-desc">Drag <code>ARIA-Lex.db</code> onto the drop zone, or click it to browse. The library loads in seconds. The indicator turns green and shows the message count.</p>
+            <div class="note note-tip">You can also drag a <code>.db</code> file directly onto the main ARIA window at any time — it automatically routes to the library loader.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-body">
+            <div class="step-title">The library stays loaded for your session</div>
+            <p class="step-desc">You'll need to reload it each time you open ARIA, as no data is stored between sessions. This keeps your data local and private.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 10: HAZARD ── -->
+    <div class="chapter" id="hazard">
+      <div class="chapter-eyebrow">Step 2 — Configure · 10</div>
+      <h2 class="chapter-title">Set hazard type, severity &amp; authority level</h2>
+      <p class="chapter-intro">These three settings control which library messages are retrieved and how the AI frames the output.</p>
+
+      <p style="font-size:14px;font-weight:500;margin-bottom:8px">Hazard type</p>
+      <table class="opt-table" style="margin-bottom:24px">
+        <tr><th>Option</th><th>DB code</th><th>Use for</th></tr>
+        <tr><td>Cyclone / Hurricane</td><td>cy</td><td>Tropical cyclones, hurricanes, typhoons</td></tr>
+        <tr><td>Flood</td><td>fl</td><td>River flood, flash flood, urban flooding</td></tr>
+        <tr><td>Heatwave</td><td>hw</td><td>Extreme heat events</td></tr>
+        <tr><td>Wildfire</td><td>wf</td><td>Forest fire, bushfire</td></tr>
+        <tr><td>Earthquake</td><td>eq</td><td>Seismic events</td></tr>
+        <tr><td>Tsunami</td><td>ts</td><td>Coastal wave events</td></tr>
+        <tr><td>Cold wave / Freeze</td><td>cw</td><td>Extreme cold, frost, snowstorm</td></tr>
+        <tr><td>Disease outbreak</td><td>do</td><td>Epidemic, pandemic risk areas</td></tr>
+      </table>
+
+      <p style="font-size:14px;font-weight:500;margin-bottom:8px">Severity</p>
+      <table class="opt-table" style="margin-bottom:24px">
+        <tr><th>Level</th><th>CAP urgency</th><th>Use when</th></tr>
+        <tr><td>Extreme</td><td>Immediate</td><td>Threat to life, take action now</td></tr>
+        <tr><td>Severe</td><td>Expected</td><td>Significant impact likely, prepare now</td></tr>
+        <tr><td>Moderate</td><td>Future</td><td>Impact possible, monitor and prepare</td></tr>
+        <tr><td>Minor</td><td>Future</td><td>Limited impact expected</td></tr>
+      </table>
+
+      <p style="font-size:14px;font-weight:500;margin-bottom:8px">Authority level</p>
+      <table class="opt-table">
+        <tr><th>Option</th><th>Use when</th></tr>
+        <tr><td>Auto — infer</td><td>Let the AI decide based on the scale and type of your GIS data. Good default.</td></tr>
+        <tr><td>National</td><td>Alert is being issued by a national agency, for national distribution</td></tr>
+        <tr><td>Regional / Provincial</td><td>Alert targets a province, region, or state</td></tr>
+        <tr><td>Local / Operational</td><td>Alert targets a district, municipality, or specific facilities</td></tr>
+        <tr><td>Individual / Household</td><td>Alert language is directed at members of the public</td></tr>
+      </table>
+
+      <div class="note note-info" style="margin-top:16px">Once you set hazard and severity, ARIA shows a preview below the form indicating how many library messages exist for that combination — and which sectors they cover. This tells you before generating what the output will be grounded in.</div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 11: AI ── -->
+    <div class="chapter" id="ai">
+      <div class="chapter-eyebrow">Step 2 — Configure · 11</div>
+      <h2 class="chapter-title">Connect an AI model</h2>
+      <p class="chapter-intro">ARIA works with any OpenAI-compatible API. You provide the API key — it is stored only in your browser and never sent to Last Larch.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Choose a provider preset or set a custom endpoint</div>
+            <table class="opt-table" style="margin-top:10px">
+              <tr><th>Preset</th><th>Provider</th><th>Get API key at</th></tr>
+              <tr><td>Claude</td><td>Anthropic</td><td><a href="https://console.anthropic.com" target="_blank" style="color:var(--gold)">console.anthropic.com</a></td></tr>
+              <tr><td>GPT-4o</td><td>OpenAI</td><td><a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--gold)">platform.openai.com/api-keys</a></td></tr>
+              <tr><td>Gemini</td><td>Google</td><td><a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold)">aistudio.google.com</a></td></tr>
+              <tr><td>Custom</td><td>Any compatible</td><td>Enter your own endpoint URL and model name</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Paste your API key</div>
+            <p class="step-desc">Click the preset button for your provider. The endpoint and model name fill in automatically. Paste your API key into the key field.</p>
+            <div class="note note-tip">ARIA saves your key per provider in your browser's localStorage. You only need to enter it once — it will be there next time you open ARIA on the same computer and browser.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Advanced: use a custom or self-hosted model</div>
+            <p class="step-desc">Select <span class="ui-el">Custom</span> and enter your endpoint URL and model name. This works with any OpenAI-compatible API — including self-hosted models running via Ollama or similar tools. For self-hosted models, your data never leaves your network.</p>
+          </div>
+        </div>
+      </div>
+      <div class="note note-warn" style="margin-top:8px">When generating descriptions, a summary of your GIS data is sent to the AI provider — feature counts, attribute names, and up to 40 sample rows per layer. No raw geometry coordinates are transmitted. Review your provider's data policy if handling sensitive infrastructure data.</div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 12: GENERATE ── -->
+    <div class="chapter" id="generate">
+      <div class="chapter-eyebrow">Step 3 — Output · 12</div>
+      <h2 class="chapter-title">Generate &amp; read the output</h2>
+      <p class="chapter-intro">Click <span class="ui-el gold">Generate alert descriptions →</span> and ARIA does the rest. Or use Library-only mode to skip the AI entirely.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Library-only mode — no AI required</div>
+            <p class="step-desc">If you have ARIA-Lex loaded and want to work on an air-gapped machine or without any AI API, tick the <strong>Library only (no AI)</strong> checkbox next to the Generate button. ARIA looks up matching pre-validated messages by hazard, severity and authority level and renders them directly — no internet connection required beyond the initial tool download.</p>
+            <div class="note note-tip">All output in library-only mode is tagged <span style="font-family:var(--mono);font-size:11px;color:var(--green)">Library</span>. There is no Contextualised or Synthesised output — you get the validated text as written, nothing more.</div>
+            <div class="note note-warn">Library-only mode cannot slot in specific place names or feature counts from your GIS data — that contextualisation step requires the AI. Decide based on your operational context which mode is appropriate.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">AI mode — wait for the loading message</div>
+            <p class="step-desc">ARIA first queries your library, then calls the AI. The loading message tells you what's happening — for example: <em>"Grounding against 24 library messages, then contextualising with local data…"</em></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Read the source tags on each sector card</div>
+            <p class="step-desc">Every sector card has a tag in the top-left telling you where the language came from:</p>
+            <div class="tag-legend" style="margin-top:12px">
+              <div class="tag-row">
+                <span class="tag-pill tag-library"><span class="tag-dot"></span>Library</span>
+                <span class="tag-desc">The pre-validated library message was used as written, with local names and counts filled in. This is the highest-confidence output — the core language has been approved.</span>
+              </div>
+              <div class="tag-row">
+                <span class="tag-pill tag-contextual"><span class="tag-dot"></span>Contextualised</span>
+                <span class="tag-desc">A library message was used as the starting point and meaningfully adapted with specific local data — named facilities, populations, or conditions from your GIS layers. Review before publishing.</span>
+              </div>
+              <div class="tag-row">
+                <span class="tag-pill tag-synthesised"><span class="tag-dot"></span>Synthesised</span>
+                <span class="tag-desc">No library message existed for this sector and hazard combination. The AI generated the language from your GIS data alone. Treat with more caution — review carefully before publishing.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-body">
+            <div class="step-title">Check the library messages used section</div>
+            <p class="step-desc">On Library and Contextualised cards, a green panel shows the exact library messages the AI used as its source. This lets you verify the AI stayed true to your validated language.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 13: EXPORT ── -->
+    <div class="chapter" id="export">
+      <div class="chapter-eyebrow">Step 3 — Output · 13</div>
+      <h2 class="chapter-title">Copy &amp; export descriptions</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Export a validation CSV from Step 1</div>
+            <p class="step-desc">Once you have query results in Step 1, a green <strong>↓ CSV</strong> button appears in the results panel. Click it to download a flat CSV of every feature found across all layers — with source name, geometry type, coordinates, and all properties. This is a simple validation file to confirm what was surfaced before you generate alert language.</p>
+            <div class="note note-tip">This CSV requires no AI and no library — it's just the raw GIS query output. Useful for record-keeping or sharing with colleagues who don't need the full alert text.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Copy a single sector description</div>
+            <p class="step-desc">Click the <span class="ui-el">Copy</span> button on any sector card. Both the <code>&lt;headline&gt;</code> and <code>&lt;description&gt;</code> are copied to your clipboard, formatted for pasting directly into a CAP editor.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Download all as .txt</div>
+            <p class="step-desc">Click <span class="ui-el">Download .txt</span> at the bottom of the results. You get a plain text file with all sector descriptions, labelled with their source tag ([LIBRARY], [CONTEXTUALISED], or [SYNTHESISED]) and the hazard/severity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 14: TROUBLESHOOT ── -->
+    <div class="chapter" id="troubleshoot">
+      <div class="chapter-eyebrow">Reference · 14</div>
+      <h2 class="chapter-title">Troubleshooting</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">?</div>
+          <div class="step-body">
+            <div class="step-title">The map isn't loading</div>
+            <p class="step-desc">You need an internet connection for the map tiles (CartoDB). Check your connection. The map tiles are the only part of ARIA that requires internet when not using API sources.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">?</div>
+          <div class="step-body">
+            <div class="step-title">A source is showing an error</div>
+            <p class="step-desc">Open the URL in your browser directly. If you see a login page, the layer is private. If you see JSON, the issue is likely CORS — the server is blocking browser requests. Try downloading the data as a file and loading it locally instead.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">?</div>
+          <div class="step-body">
+            <div class="step-title">No features found in my polygon</div>
+            <p class="step-desc">Check that the source's toggle is switched on (green). Click <span class="ui-el">⊕ Fit map to data</span> to confirm the source data actually covers the area you've drawn your polygon in.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">?</div>
+          <div class="step-body">
+            <div class="step-title">The AI is returning an error</div>
+            <p class="step-desc">The most common causes: wrong API key, wrong endpoint URL, or the model name is misspelled. Double-check all three. For Claude, make sure your key starts with <code>sk-ant-</code>. For OpenAI, <code>sk-</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">?</div>
+          <div class="step-body">
+            <div class="step-title">Library shows "No messages found"</div>
+            <p class="step-desc">The current hazard/severity combination may not have entries in your library file. Check the library preview in Step 2. The AI will still generate descriptions — they'll be tagged Synthesised.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">?</div>
+          <div class="step-body">
+            <div class="step-title">Library-only mode gives no results</div>
+            <p class="step-desc">Check that ARIA-Lex is loaded (the indicator in the top-right should be green). Then confirm the hazard and severity combination you've selected has entries in the library — the preview in Step 2 will tell you. If it says "No library messages found", try a different severity level or check that the correct .db file is loaded.</p>
+          </div>
+        </div>
+            <p class="step-desc">Email <a href="mailto:fysh@lastlarch.com" style="color:var(--gold)">fysh@lastlarch.com</a> with a description of what you were doing and what happened. Screenshots help.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 15: LOCAL LIBRARY SERVER ── -->
+    <div class="chapter" id="local-server">
+      <div class="chapter-eyebrow">Reference · 15</div>
+      <h2 class="chapter-title">Running the local library server</h2>
+      <p class="chapter-intro">If you have GIS files stored on your computer that you want ARIA to load automatically — without dragging and dropping them each time — you can run a tiny local server that watches a folder and serves those files to ARIA.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Make sure Python is installed</div>
+            <p class="step-desc">Open a terminal (Command Prompt on Windows, Terminal on Mac/Linux) and type:</p>
+            <div class="note note-key">python --version</div>
+            <p class="step-desc" style="margin-top:8px">If you see a version number, you're ready. If not, download Python from <a href="https://python.org" target="_blank" style="color:var(--gold)">python.org</a> — the free installer takes two minutes.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Create your library folder</div>
+            <p class="step-desc">Create a folder anywhere on your computer — for example <code>Documents/ARIA-Library/</code>. Put your GeoJSON files in it. ARIA will load everything in this folder automatically.</p>
+            <div class="note note-tip">Files must be GeoJSON (.geojson or .json). Shapefiles should be converted to GeoJSON first, or loaded via drag-and-drop instead.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Save this Python script as <code>aria-server.py</code></div>
+            <p class="step-desc">Copy and save the following into a file called <code>aria-server.py</code> inside your library folder:</p>
+            <div style="background:var(--ink);color:#e6edf3;border-radius:6px;padding:18px 20px;font-family:var(--mono);font-size:12px;line-height:1.8;margin-top:10px;overflow-x:auto">
+<pre style="margin:0;white-space:pre-wrap"><span style="color:#7d8590"># ARIA Local Library Server — Last Larch</span>
+<span style="color:#7d8590"># Save this file in your GeoJSON library folder and run it.</span>
+<span style="color:#7d8590"># ARIA will connect to it automatically on localhost:8765</span>
+
+import http.server, json, os, urllib.parse
+
+FOLDER = os.path.dirname(os.path.abspath(__file__))
+PORT   = 8765
+
+class Handler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        path = urllib.parse.unquote(self.path)
+        if path == '/layers':
+            files = [f for f in os.listdir(FOLDER)
+                     if f.endswith(('.geojson','.json')) and not f.startswith('.')]
+            layers = [{'name': os.path.splitext(f)[0], 'filename': f} for f in files]
+            body = json.dumps(layers).encode()
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(body)
+        elif path.startswith('/file/'):
+            fname = path[6:]
+            fpath = os.path.join(FOLDER, fname)
+            if os.path.exists(fpath):
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                with open(fpath, 'rb') as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_response(404); self.end_headers()
+        else:
+            self.send_response(404); self.end_headers()
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET')
+        self.end_headers()
+    def log_message(self, *a): pass  <span style="color:#7d8590"># suppress terminal output</span>
+
+print(f'ARIA library server running — watching {FOLDER}')
+print(f'Open ARIA and click Connect in the sources panel.')
+http.server.HTTPServer(('localhost', PORT), Handler).serve_forever()</pre>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-body">
+            <div class="step-title">Run the server</div>
+            <p class="step-desc">In your terminal, navigate to the folder and run:</p>
+            <div class="note note-key">python aria-server.py</div>
+            <p class="step-desc" style="margin-top:8px">You'll see a confirmation message. Leave the terminal window open — closing it stops the server.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">5</div>
+          <div class="step-body">
+            <div class="step-title">Connect from ARIA</div>
+            <p class="step-desc">Open ARIA in your browser. At the top of the sources panel you'll see <strong>Local library not connected</strong>. Click <strong>Connect</strong>. ARIA loads all GeoJSON files from your folder instantly and polls for changes every 10 seconds — so you can drop new files into the folder while ARIA is open and they'll appear automatically.</p>
+            <div class="note note-tip">The server only accepts connections from your own computer (localhost). Your files cannot be accessed by anyone else.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="chapter-divider">
+
+    <!-- ── CHAPTER 16: LICENSE ── -->
+    <div class="chapter" id="license">
+      <div class="chapter-eyebrow">Reference · 16</div>
+      <h2 class="chapter-title">License &amp; attribution</h2>
+      <p class="chapter-intro">ARIA is free and open source. You are welcome to use, adapt, and share it — with one condition: credit Last Larch.</p>
+
+      <div style="background:var(--paper2);border:1px solid var(--paper3);border-radius:6px;padding:24px 28px;margin-bottom:24px">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Creative Commons Attribution 4.0 International · CC BY 4.0</div>
+        <p style="font-size:15px;font-weight:500;margin-bottom:12px;line-height:1.5">You are free to:</p>
+        <ul style="font-size:14px;color:var(--ink2);line-height:2;padding-left:20px;margin-bottom:16px">
+          <li><strong>Share</strong> — copy and redistribute the tool in any medium or format</li>
+          <li><strong>Adapt</strong> — remix, transform, and build upon the tool for any purpose, including commercially</li>
+        </ul>
+        <p style="font-size:15px;font-weight:500;margin-bottom:12px;line-height:1.5">Under the following terms:</p>
+        <ul style="font-size:14px;color:var(--ink2);line-height:2;padding-left:20px">
+          <li><strong>Attribution</strong> — you must give appropriate credit to Last Larch, provide a link to the license, and indicate if changes were made</li>
+        </ul>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">→</div>
+          <div class="step-body">
+            <div class="step-title">How to attribute ARIA</div>
+            <p class="step-desc">When using or adapting ARIA, include a credit line such as:</p>
+            <div class="note note-key">ARIA by Last Larch (lastlarch.com) · CC BY 4.0</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">→</div>
+          <div class="step-body">
+            <div class="step-title">Full license text</div>
+            <p class="step-desc">Read the full CC BY 4.0 license at <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" style="color:var(--gold)">creativecommons.org/licenses/by/4.0</a></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">→</div>
+          <div class="step-body">
+            <div class="step-title">Questions or custom implementations</div>
+            <p class="step-desc">If you're deploying ARIA within a national authority, UN agency, or research institution and would like support, customisation, or a formal partnership, contact Last Larch at <a href="mailto:fysh@lastlarch.com" style="color:var(--gold)">fysh@lastlarch.com</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// Highlight active TOC item on scroll
+const chapters = document.querySelectorAll('.chapter');
+const tocLinks  = document.querySelectorAll('.toc-link');
+const observer  = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const match = document.querySelector('.toc-link[href="#' + e.target.id + '"]');
+      if (match) match.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+chapters.forEach(c => observer.observe(c));
+</script>
+
+</body>
+</html>
