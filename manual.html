@@ -563,7 +563,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
     <div class="chapter" id="ai">
       <div class="chapter-eyebrow">Step 2: Configure · 11</div>
       <h2 class="chapter-title">Connect an AI model</h2>
-      <p class="chapter-intro">ARIA works with any OpenAI-compatible API. You provide the API key. It is stored only in your browser and is never sent to Last Larch.</p>
+      <p class="chapter-intro">ARIA works with any OpenAI-compatible API, including a model running on your own computer or network. You provide the API key when one is needed. It is stored only in your browser and is never sent to Last Larch.</p>
 
       <div class="steps">
         <div class="step">
@@ -590,13 +590,29 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
         <div class="step">
           <div class="step-n">3</div>
           <div class="step-body">
-            <div class="step-title">Advanced: use a custom endpoint</div>
-            <p class="step-desc">Select <span class="ui-el">Custom</span> and enter the endpoint URL and model name of an OpenAI-compatible API, for example OpenRouter at <code>https://openrouter.ai/api/v1/chat/completions</code>. ARIA sends every AI request through its relay worker, and the worker only forwards to <code>api.anthropic.com</code>, <code>api.openai.com</code>, <code>generativelanguage.googleapis.com</code> and <code>openrouter.ai</code>. An endpoint on any other host is refused.</p>
-            <div class="note note-warn">Models on your own computer or network, such as Ollama, cannot be reached this way, because the relay runs in the cloud. If no data may leave your network, use Library only mode. It sends nothing anywhere.</div>
+            <div class="step-title">Advanced: a hosted custom endpoint</div>
+            <p class="step-desc">Select <span class="ui-el">Custom</span> and enter the endpoint URL and model name of an OpenAI-compatible API, for example OpenRouter at <code>https://openrouter.ai/api/v1/chat/completions</code>. For an endpoint reachable on the open internet, ARIA sends the request through its relay worker, and the worker only forwards to <code>api.anthropic.com</code>, <code>api.openai.com</code>, <code>generativelanguage.googleapis.com</code> and <code>openrouter.ai</code>. A public endpoint on any other host is refused.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-body">
+            <div class="step-title">Advanced: a local model on your own computer or network</div>
+            <p class="step-desc">Select <span class="ui-el">Custom</span> and enter the address of a model running on your own computer or local network, for example <code>http://localhost:11434/v1/chat/completions</code> for Ollama. ARIA recognises addresses like <code>localhost</code>, <code>127.0.0.1</code> and private network ranges (<code>10.x</code>, <code>172.16&ndash;31.x</code>, <code>192.168.x</code>) and calls them directly from your browser. The request never reaches the relay worker or the open internet. The field below the endpoint says which mode is active.</p>
+            <div class="note note-tip">A local server usually needs no API key. Leave the key field blank unless yours requires one.</div>
+            <div class="note note-warn">Your local server must allow the request. Browsers block a page from reading a response unless the server explicitly permits it (CORS), and ARIA opened as a file has no address of its own, so the server must allow it specifically.
+              <table class="opt-table" style="margin-top:10px">
+                <tr><th>Server</th><th>How to allow it</th></tr>
+                <tr><td>Ollama</td><td>Set the environment variable <code>OLLAMA_ORIGINS=*</code> before starting it, for example <code>OLLAMA_ORIGINS=* ollama serve</code>. Set it permanently in your system's environment variables to avoid repeating this.</td></tr>
+                <tr><td>LM Studio</td><td>In the local server tab, turn on <strong>Enable CORS</strong> before starting the server.</td></tr>
+                <tr><td>llama.cpp server, text-generation-webui, and similar</td><td>Start the server with its CORS or <code>--allow-origin</code> flag set to allow all origins, or place a reverse proxy in front of it that adds an <code>Access-Control-Allow-Origin: *</code> header.</td></tr>
+              </table>
+              If the connection is refused, ARIA shows a plain error naming the address and CORS. See <a href="#troubleshoot" style="color:var(--gold)">Troubleshooting</a>.
+            </div>
           </div>
         </div>
       </div>
-      <div class="note note-warn" style="margin-top:8px">When generating descriptions, a summary of your GIS data is sent to the AI provider: feature counts, attribute names, and up to 40 sample rows per layer. No raw geometry coordinates are transmitted. Review your provider's data policy if you are handling sensitive infrastructure data.</div>
+      <div class="note note-warn" style="margin-top:8px">When generating descriptions, a summary of your GIS data is sent to the AI provider: feature counts, attribute names, and up to 40 sample rows per layer. No raw geometry coordinates are transmitted. For a hosted provider, review its data policy if you are handling sensitive infrastructure data. For a local model, this summary never leaves your computer or network.</div>
     </div>
 
     <hr class="chapter-divider">
@@ -697,7 +713,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
           <div class="step-n">?</div>
           <div class="step-body">
             <div class="step-title">The map is not loading</div>
-            <p class="step-desc">The map background (Esri World Street Map) needs an internet connection in both versions. When it cannot load, ARIA shows a short notice above the map. Check your connection. Drawing, local files and Library only mode still work without it.</p>
+            <p class="step-desc">The map background (Esri World Street Map) needs an internet connection in both versions. When it cannot load, ARIA shows a short notice and switches to a simplified offline basemap: country borders and a coordinate grid, built from Natural Earth data and included in the file. It is for orientation, not precise measurement. Drawing, local files, the spatial query and Library only mode are unaffected either way, since they work from your data's coordinates, not from the map image.</p>
           </div>
         </div>
         <div class="step">
@@ -705,6 +721,13 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
           <div class="step-body">
             <div class="step-title">ARIA.html opens as a blank or broken page</div>
             <p class="step-desc">The standard version loads its libraries from public servers when it opens. If you have no connection, or your network blocks those servers, the page cannot start. Use <code>ARIA-offline.html</code> instead. It has the libraries built in.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">?</div>
+          <div class="step-body">
+            <div class="step-title">A local model will not connect</div>
+            <p class="step-desc">ARIA shows an error naming the address and mentioning CORS. This means your local model server is either not running or has not been told to accept requests from ARIA. Confirm the server is running and reachable at the address you entered, then see <a href="#ai" style="color:var(--gold)">Connect an AI model</a> for how to enable CORS in Ollama, LM Studio, and similar tools.</p>
           </div>
         </div>
         <div class="step">

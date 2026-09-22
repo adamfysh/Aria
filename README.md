@@ -36,6 +36,7 @@ Full walkthrough: [`manual.html`](./manual.html)
 | `aria-worker.js` | Cloudflare Worker source. Relays AI API calls so ARIA works in any browser, including when opened as a local file |
 | `manual.html` | Full operations manual covering every step and option |
 | `tools/build-offline.mjs` | Script that builds `ARIA-offline.html` from `ARIA.html` |
+| `tools/build-basemap.mjs` | Script that regenerates the offline basemap data embedded in `ARIA.html` |
 | `LICENSE` | MIT |
 
 ## Which version should I use?
@@ -45,7 +46,7 @@ The two versions behave the same once they are open. The difference is how they 
 - **Standard (`ARIA.html`)**: small. It fetches Leaflet, Leaflet.draw, Turf, shpjs, sql.js and its fonts from public CDNs each time it opens, so it needs an internet connection to start.
 - **Offline (`ARIA-offline.html`)**: about six times larger, because those libraries and fonts are inside the file. It opens with no connection.
 
-Three things need internet in both versions: the map background (Esri World Street Map), online data sources such as ArcGIS, WFS and URLs, and AI providers. Without a connection the map background stays grey and ARIA shows a short notice. Drawing, local files, ARIA-Lex and Library only mode all still work.
+Three things need internet in both versions: the map background (Esri World Street Map), online data sources such as ArcGIS, WFS and URLs, and hosted AI providers. Without a connection the map background switches to a simplified offline basemap (country borders and a coordinate grid, built into the file) so a polygon's location stays visible. Drawing, local files, the spatial query, ARIA-Lex, Library only mode, and a local AI model all still work with no connection, since none of them depend on the map image or the open internet.
 
 `ARIA-offline.html` is generated. To rebuild it after changing `ARIA.html`, run `node tools/build-offline.mjs` (Node 18 or later, and access to the npm registry). The script downloads pinned copies of the libraries, embeds them, and stops with an error if anything unexpected is found. The licence texts of the embedded libraries are inside the file.
 
@@ -65,7 +66,9 @@ You can also use the library with no AI at all. Tick "Library only" in Step 2. N
 
 ## Bring your own AI model
 
-Presets for Claude, GPT-4o, and Gemini are built in. A Custom option accepts the endpoint and model name of any OpenAI-compatible API hosted by OpenRouter or one of the other providers the relay worker allows. Models on your own computer or network, such as Ollama, cannot be reached, because requests go through the relay. Your API key is stored only in your browser. It is sent only to the AI provider you choose, through the relay.
+Presets for Claude, GPT-4o, and Gemini are built in. A Custom option accepts the endpoint and model name of any OpenAI-compatible API, including a model on your own computer or network, such as Ollama or LM Studio.
+
+For a public endpoint (a built-in preset, or a Custom endpoint like OpenRouter), the request goes through the relay worker, and your API key is sent only to the provider you chose. For a local or private address (`localhost`, `127.0.0.1`, or a private network range), ARIA calls it directly from your browser instead. The request never reaches the relay or the open internet. Your local server must allow the request (CORS); see `manual.html` for how to enable this in Ollama and similar tools. Your API key, when one is needed at all, is stored only in your browser.
 
 ## Contributing
 
