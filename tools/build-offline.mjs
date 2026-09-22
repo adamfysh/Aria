@@ -135,7 +135,11 @@ let licenses = 'Third-party software included in this file\n' +
   'minification or bundling. Turf modules are bundled: only bbox and booleanIntersects\n' +
   'and their dependencies are included. shpjs is included as distributed by its\n' +
   'authors and contains JSZip (MIT or GPLv3, used here under MIT), lie, proj4js and\n' +
-  'other MIT-licensed code; their notices remain inside the shpjs code below.\n\n';
+  'other MIT-licensed code; their notices remain inside the shpjs code below.\n\n' +
+  'The offline basemap shown when the map tiles cannot load is built from Natural\n' +
+  'Earth country boundaries (public domain, no attribution required), redistributed\n' +
+  'as TopoJSON by the world-atlas package (ISC licence, see tools/build-basemap.mjs).\n' +
+  'That data is embedded in ARIA.html itself, so it is not listed as a package below.\n\n';
 for (const pkg of [...licensed].sort()) {
   const dir = nm(...pkg.split('/'));
   const meta = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
