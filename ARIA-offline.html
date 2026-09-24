@@ -1882,13 +1882,22 @@ async function getSourceBbox(s){
   // s.raw is null. Ask the service for its full extent instead so "Fit map to
   // data" works right after adding a layer, not only after the first query.
   if(s.type==='arcgis'&&s.url){
+    let base=s.url.replace(/\/query$/,'');if(/\/(FeatureServer|MapServer)\/?$/i.test(base))base=base.replace(/\/?$/,'/0');
     try{
-      let base=s.url.replace(/\/query$/,'');if(/\/(FeatureServer|MapServer)\/?$/i.test(base))base=base.replace(/\/?$/,'/0');
       const p=new URLSearchParams({where:'1=1',returnExtentOnly:'true',outSR:'4326',f:'json'});
       const j=await(await fetch(base+'/query?'+p,{signal:AbortSignal.timeout(8000)})).json();
       const ext=j.extent||j.fullExtent;
       if(ext&&isFinite(ext.xmin)&&isFinite(ext.ymin)&&isFinite(ext.xmax)&&isFinite(ext.ymax))return[ext.xmin,ext.ymin,ext.xmax,ext.ymax];
-    }catch(e){}
+      console.warn('[fit] returnExtentOnly gave no usable extent for '+s.name+', falling back to a feature fetch',j);
+    }catch(e){console.warn('[fit] returnExtentOnly failed for '+s.name+', falling back to a feature fetch',e);}
+    // Fallback for servers that ignore/reject returnExtentOnly: pull a capped
+    // batch of real features (still reprojected to 4326 via f=geojson, same
+    // as a normal query) and compute the bbox from those instead.
+    try{
+      const p2=new URLSearchParams({where:'1=1',outFields:'*',resultRecordCount:'1000',f:'geojson'});
+      const gj=await(await fetch(base+'/query?'+p2,{signal:AbortSignal.timeout(10000)})).json();
+      if(gj&&gj.features&&gj.features.length){const bb=turf.bbox(gj);if(isFinite(bb[0])&&isFinite(bb[1])&&isFinite(bb[2])&&isFinite(bb[3]))return bb;}
+    }catch(e){console.warn('[fit] feature-fetch fallback also failed for '+s.name,e);}
   }
   return null;
 }
@@ -1896,17 +1905,20 @@ async function getSourceBbox(s){
 async function fitToSources(){
   setStatus('loading','Fitting to data…');
   const active=sources.filter(s=>s.active);
+  console.log('[fit] active sources:',active.map(s=>s.name));
   const results=await Promise.all(active.map(async s=>{
     const bb=await getSourceBbox(s);
-    if(!bb)return null;
+    if(!bb){console.log('[fit] no bbox for',s.name);return null;}
     const area=(bb[2]-bb[0])*(bb[3]-bb[1]);
-    if(area>GLOBAL_THRESHOLD)return null;
-    return{bb,area};
+    if(area>GLOBAL_THRESHOLD){console.log('[fit] excluded (too large, area='+area.toFixed(1)+'):',s.name,bb);return null;}
+    console.log('[fit] bbox for',s.name,bb,'area='+area.toFixed(4));
+    return{bb,area,name:s.name};
   }));
   const boxes=results.filter(Boolean);
   if(!boxes.length){setStatus('ready','No local data to fit to');return;}
   const minArea=Math.min(...boxes.map(b=>b.area));
   const local=boxes.filter(b=>b.area<=minArea*10);
+  console.log('[fit] fitting to:',local.map(b=>b.name));
   const m=local.map(b=>b.bb).reduce((a,b)=>[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[2],b[2]),Math.max(a[3],b[3])]);
   intentionalMove=true;
   map.flyToBounds([[m[1],m[0]],[m[3],m[2]]],{padding:[40,40],maxZoom:12,duration:1.2});
