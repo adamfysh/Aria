@@ -754,7 +754,7 @@ let intentionalMove=false;
 map.on('layeradd',()=>{if(!intentionalMove)map.stop();});
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let sources=[{id:'s1',name:'Sample points',type:'geojson',active:true,url:null,raw:makeSampleData()}];
+let sources=[{id:'s1',name:'Sample points',type:'geojson',active:false,url:null,raw:makeSampleData()}];
 let currentPolygon=null,lastResults=[],selectedSev='',sectors=[],currentProvider='anthropic',hasGenerated=false;
 
 window.addEventListener('DOMContentLoaded',()=>{
@@ -873,9 +873,34 @@ async function extractWebMapLayers(url,baseName){
 
 // ── FIT MAP ───────────────────────────────────────────────────────────────────
 const GLOBAL_THRESHOLD=9720;
-function fitToSources(){
-  const boxes=[];
-  sources.forEach(s=>{if(!s.active||!s.raw)return;try{const bb=turf.bbox(s.raw);if(!isFinite(bb[0]))return;const area=(bb[2]-bb[0])*(bb[3]-bb[1]);if(area>GLOBAL_THRESHOLD)return;boxes.push({bb,area});}catch(e){}});
+async function getSourceBbox(s){
+  if(s.raw){try{const bb=turf.bbox(s.raw);if(isFinite(bb[0])&&isFinite(bb[1])&&isFinite(bb[2])&&isFinite(bb[3]))return bb;}catch(e){}}
+  // ArcGIS sources only fetch features once a polygon query runs, so before that
+  // s.raw is null. Ask the service for its full extent instead so "Fit map to
+  // data" works right after adding a layer, not only after the first query.
+  if(s.type==='arcgis'&&s.url){
+    try{
+      let base=s.url.replace(/\/query$/,'');if(/\/(FeatureServer|MapServer)\/?$/i.test(base))base=base.replace(/\/?$/,'/0');
+      const p=new URLSearchParams({where:'1=1',returnExtentOnly:'true',outSR:'4326',f:'json'});
+      const j=await(await fetch(base+'/query?'+p,{signal:AbortSignal.timeout(8000)})).json();
+      const ext=j.extent||j.fullExtent;
+      if(ext&&isFinite(ext.xmin)&&isFinite(ext.ymin)&&isFinite(ext.xmax)&&isFinite(ext.ymax))return[ext.xmin,ext.ymin,ext.xmax,ext.ymax];
+    }catch(e){}
+  }
+  return null;
+}
+
+async function fitToSources(){
+  setStatus('loading','Fitting to data…');
+  const active=sources.filter(s=>s.active);
+  const results=await Promise.all(active.map(async s=>{
+    const bb=await getSourceBbox(s);
+    if(!bb)return null;
+    const area=(bb[2]-bb[0])*(bb[3]-bb[1]);
+    if(area>GLOBAL_THRESHOLD)return null;
+    return{bb,area};
+  }));
+  const boxes=results.filter(Boolean);
   if(!boxes.length){setStatus('ready','No local data to fit to');return;}
   const minArea=Math.min(...boxes.map(b=>b.area));
   const local=boxes.filter(b=>b.area<=minArea*10);
