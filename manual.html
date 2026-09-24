@@ -3,39 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ARIA Operations Manual</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<title>ARIA Operations Manual | Last Larch</title>
+<link rel="stylesheet" href="last_larch.css">
+<link rel="icon" type="image/png" href="LL Logo 4.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&family=Karla:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --paper: #f7f4ee; --paper2: #eeebe3; --paper3: #e0dcd2;
-  --ink: #1a1a18; --ink2: #3a3a36; --ink3: #7a7a72;
-  --gold: #b8860b; --gold-bg: rgba(184,134,11,0.08);
+  --paper: #F4F0E6; --paper2: #EAE4D4; --paper3: #ddd5bf;
+  --ink: #2A2722; --ink2: #4A4540; --ink3: #7A7570;
+  --gold: #C8A84B; --gold-bg: rgba(200,168,75,0.1);
   --green: #1a5c30; --green-bg: rgba(26,92,48,0.08);
   --red: #8b1a1a; --red-bg: rgba(139,26,26,0.08);
   --blue: #1a3a5c; --blue-bg: rgba(26,58,92,0.08);
-  --sans: 'DM Sans', sans-serif;
+  --sans: 'Karla', 'Helvetica Neue', sans-serif;
   --mono: 'DM Mono', monospace;
-  --serif: 'Playfair Display', serif;
+  --serif: 'DM Serif Display', Georgia, serif;
 }
 
 html { scroll-behavior: smooth; }
 body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.7; font-weight: 300; }
 
 /* ── NAV ── */
-nav { position: sticky; top: 0; z-index: 100; background: var(--ink); padding: 0 48px; display: flex; align-items: stretch; gap: 0; }
-.nav-logo { font-family: var(--serif); font-size: 15px; font-weight: 700; color: var(--paper); text-decoration: none; padding: 14px 24px 14px 0; border-right: 1px solid rgba(255,255,255,0.1); margin-right: 4px; }
-.nav-logo span { color: var(--gold); }
-.nav-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(247,244,238,0.4); padding: 14px 16px; display: flex; align-items: center; }
-.nav-links { display: flex; margin-left: auto; }
-.nav-links a { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: rgba(247,244,238,0.5); text-decoration: none; padding: 0 14px; display: flex; align-items: center; border-left: 1px solid rgba(255,255,255,0.06); transition: color 0.15s; }
-.nav-links a:hover { color: var(--paper); }
+.manual-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--char-l); margin-left: 16px; padding-left: 16px; border-left: 1px solid var(--ivory-d); }
 
 /* ── LAYOUT ── */
-.layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 49px); }
+.layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 64px); }
 
 /* ── SIDEBAR TOC ── */
-.toc { background: var(--paper2); border-right: 1px solid var(--paper3); padding: 28px 0; position: sticky; top: 49px; height: calc(100vh - 49px); overflow-y: auto; }
+.toc { background: var(--paper2); border-right: 1px solid var(--paper3); padding: 28px 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; }
 .toc::-webkit-scrollbar { width: 3px; }
 .toc::-webkit-scrollbar-thumb { background: var(--paper3); }
 .toc-section { margin-bottom: 4px; }
@@ -51,7 +47,7 @@ main { padding: 52px 64px 80px; max-width: 780px; }
 /* ── CHAPTER ── */
 .chapter { margin-bottom: 64px; scroll-margin-top: 70px; }
 .chapter-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
-.chapter-title { font-family: var(--serif); font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 14px; }
+.chapter-title { font-family: var(--serif); font-size: 28px; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 14px; }
 .chapter-intro { font-size: 15px; color: var(--ink2); line-height: 1.75; margin-bottom: 32px; max-width: 600px; border-left: 3px solid var(--paper3); padding-left: 16px; }
 
 /* ── STEPS ── */
@@ -111,16 +107,14 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="nav-logo">Last <span>Larch</span></a>
-  <span class="nav-label">ARIA Operations Manual</span>
-  <div class="nav-links">
-    <a href="#setup">Setup</a>
-    <a href="#sources">Sources</a>
-    <a href="#polygon">Polygon</a>
-    <a href="#library">Library</a>
-    <a href="#ai">AI model</a>
-    <a href="#generate">Generate</a>
+<nav class="demo-nav">
+  <a href="index.html" class="nav-logo">
+    <img src="LL Logo 4.png" alt="Last Larch" style="height:32px; width:auto;">
+    Last Larch
+  </a>
+  <span class="manual-label">ARIA Operations Manual</span>
+  <div class="nav-cta">
+    <a href="project-aria.html" class="btn-primary">Back to ARIA</a>
   </div>
 </nav>
 
@@ -159,7 +153,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
     <div class="toc-section">
       <div class="toc-head">Reference</div>
       <a href="#troubleshoot" class="toc-link"><span class="toc-num">14</span>Troubleshooting</a>
-      <a href="#local-server" class="toc-link"><span class="toc-num">15</span>Local library server</a>
+      <a href="#local-server" class="toc-link"><span class="toc-num">15</span>Local data server</a>
       <a href="#license" class="toc-link"><span class="toc-num">16</span>License</a>
     </div>
   </aside>
@@ -170,7 +164,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
     <!-- INTRO -->
     <div style="margin-bottom:52px">
       <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Last Larch · ARIA</div>
-      <h1 style="font-family:var(--serif);font-size:38px;font-weight:700;letter-spacing:-0.02em;line-height:1.1;margin-bottom:14px">Operations Manual</h1>
+      <h1 style="font-family:var(--serif);font-size:38px;letter-spacing:-0.02em;line-height:1.1;margin-bottom:14px">Operations Manual</h1>
       <p style="font-size:15px;color:var(--ink2);max-width:560px;line-height:1.75">A step-by-step guide to setting up and using ARIA, from downloading the file to generating your first sector-specific CAP alert descriptions.</p>
     </div>
 
@@ -780,7 +774,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
     <!-- ── CHAPTER 15: LOCAL LIBRARY SERVER ── -->
     <div class="chapter" id="local-server">
       <div class="chapter-eyebrow">Reference · 15</div>
-      <h2 class="chapter-title">Running the local library server</h2>
+      <h2 class="chapter-title">Running the local data server</h2>
       <p class="chapter-intro">If you have GIS files stored on your computer and want ARIA to load them automatically, without dragging and dropping them each time, you can run a small local server that watches a folder and serves those files to ARIA.</p>
 
       <div class="steps">
@@ -807,7 +801,7 @@ code { font-family: var(--mono); font-size: 13px; background: var(--paper2); pad
             <div class="step-title">Save this Python script as <code>aria-server.py</code></div>
             <p class="step-desc">Copy and save the following into a file called <code>aria-server.py</code> inside your library folder:</p>
             <div style="background:var(--ink);color:#e6edf3;border-radius:6px;padding:18px 20px;font-family:var(--mono);font-size:12px;line-height:1.8;margin-top:10px;overflow-x:auto">
-<pre style="margin:0;white-space:pre-wrap"><span style="color:#7d8590"># ARIA Local Library Server (Last Larch)</span>
+<pre style="margin:0;white-space:pre-wrap"><span style="color:#7d8590"># ARIA Local Data Server (Last Larch)</span>
 <span style="color:#7d8590"># Save this file in your GeoJSON library folder and run it.</span>
 <span style="color:#7d8590"># ARIA will connect to it automatically on localhost:8765</span>
 
@@ -869,7 +863,7 @@ http.server.ThreadingHTTPServer(('localhost', PORT), Handler).serve_forever()</p
           <div class="step-n">5</div>
           <div class="step-body">
             <div class="step-title">Connect from ARIA</div>
-            <p class="step-desc">Open ARIA in your browser. At the top of the sources panel, <strong>Local library not connected</strong> appears. Click <strong>Connect</strong>. ARIA loads all GeoJSON files from your folder and checks for changes every 10 seconds, so you can drop new files into the folder while ARIA is open and they appear automatically.</p>
+            <p class="step-desc">Open ARIA in your browser. At the top of the sources panel, <strong>Local data server not connected</strong> appears. Click <strong>Connect</strong>. ARIA loads all GeoJSON files from your folder and checks for changes every 10 seconds, so you can drop new files into the folder while ARIA is open and they appear automatically.</p>
             <div class="note note-tip">The server only accepts connections from your own computer (localhost) and only serves the GeoJSON files in your library folder.</div>
           </div>
         </div>
